@@ -189,6 +189,11 @@ int main(int argc, char ** argv) {
         fprintf(stderr, "%s: error: prompt is too long (%d tokens, max %d)\n", __func__, (int) embd_inp.size(), n_ctx - 4);
         return 1;
     }
+
+    char buffer_detect[1024];
+    buffer_detect[0] = '\0';
+    const char * human = "<human>";
+    const size_t human_len = strlen(human);
     
     // debug message about similarity of saved session, if applicable
     size_t n_matching_session_tokens = 0;
@@ -495,10 +500,26 @@ int main(int argc, char ** argv) {
 
         // display text
         if (!input_noecho) {
-            for (auto id : embd) {
-                printf("%s", gptneox_token_to_str(ctx, id));
+            size_t buffer_detect_len = strlen(buffer_detect);
+            if (buffer_detect_len > human_len) {
+              char tmp = buffer_detect[buffer_detect_len - human_len];
+              buffer_detect[buffer_detect_len - human_len] = '\0';
+              printf("%s", buffer_detect);
+              fflush(stdout);
+              buffer_detect[buffer_detect_len - human_len] = tmp;
+              memmove(buffer_detect, &buffer_detect[buffer_detect_len - human_len], human_len + 1);
+              buffer_detect_len = human_len;
             }
-            fflush(stdout);
+            for (auto id : embd) {
+                const char * tok = gptneox_token_to_str(ctx, id);
+                sprintf(buffer_detect + buffer_detect_len, "%s", tok);
+                buffer_detect_len += strlen(tok);
+            }
+            char * human_pos = strstr(buffer_detect, human);
+            if (human_pos){
+              *human_pos = '\0';
+              n_remain = 0;
+            }
         }
         // reset color to default if we there is no pending user input
         if (!input_noecho && (int)embd_inp.size() == n_consumed) {
@@ -612,7 +633,13 @@ int main(int argc, char ** argv) {
 #if defined (_WIN32)
     signal(SIGINT, SIG_DFL);
 #endif
-     printf("\n\n");
+    if (!input_noecho) {
+      if (strlen(buffer_detect)) {
+          printf("%s", buffer_detect);
+      }
+    }
+
+    printf("\n\n");
     gptneox_print_timings(ctx);
     gptneox_free(ctx);
 
