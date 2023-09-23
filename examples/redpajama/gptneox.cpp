@@ -2791,7 +2791,7 @@ int gptneox_tokenize(
     return res.size();
 }
 
-int gptneox_n_vocab(struct gptneox_context * ctx) {
+int gptneox_n_vocab(const struct gptneox_context * ctx) {
     return ctx->vocab.id_to_token.size();
 }
 
@@ -2811,7 +2811,7 @@ float * gptneox_get_embeddings(struct gptneox_context * ctx) {
     return ctx->embedding.data();
 }
 
-const char * gptneox_token_to_str(struct gptneox_context * ctx, gptneox_token token) {
+const char * gptneox_token_to_str(const struct gptneox_context * ctx, gptneox_token token) {
     if (token >= gptneox_n_vocab(ctx)) {
         return nullptr;
     }
@@ -2836,6 +2836,22 @@ gptneox_token gptneox_token_nl() {
     return 13;
 }
 
+struct gptneox_timings gptneox_get_timings(struct gptneox_context * ctx) {
+    struct gptneox_timings result = {
+        /*.t_start_ms  =*/ 1e-3 * ctx->t_start_us,
+        /*.t_end_ms    =*/ 1.00 * ggml_time_ms(),
+        /*.t_load_ms   =*/ 1e-3 * ctx->t_load_us,
+        /*.t_sample_ms =*/ 1e-3 * ctx->t_sample_us,
+        /*.t_p_eval_ms =*/ 1e-3 * ctx->t_p_eval_us,
+        /*.t_eval_ms   =*/ 1e-3 * ctx->t_eval_us,
+
+        /*.n_sample =*/ std::max(1, ctx->n_sample),
+        /*.n_p_eval =*/ std::max(1, ctx->n_p_eval),
+        /*.n_eval   =*/ std::max(1, ctx->n_eval),
+    };
+
+    return result;
+}
 
 void gptneox_print_timings(struct gptneox_context * ctx) {
     const int64_t t_end_us = ggml_time_us();

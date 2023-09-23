@@ -1,5 +1,5 @@
 # Define the default target now so that it is always the first target
-default: main quantize quantize-stats perplexity embedding vdot
+default: main quantize quantize-stats perplexity embedding vdot server
 
 ifndef UNAME_S
 UNAME_S := $(shell uname -s)
@@ -194,7 +194,7 @@ libllama.so: llama.o ggml.o $(OBJS)
 	$(CXX) $(CXXFLAGS) -shared -fPIC -o $@ $^ $(LDFLAGS)
 
 clean:
-	rm -vf *.o main quantize quantize-stats perplexity embedding benchmark-matmult save-load-state build-info.h
+	rm -vf *.o main quantize quantize-stats perplexity embedding benchmark-matmult save-load-state build-info.h server
 
 #
 # Examples
@@ -243,6 +243,11 @@ redpajama-chat: examples/redpajama/main-redpajama-chat.cpp ggml.o gptneox.o comm
 	@echo '====  Run ./redpajama-chat -h for help.  ===='
 	@echo
 
+server: examples/redpajama/server.cpp examples/server/json.hpp examples/server/httplib.h build-info.h ggml.o llama.o gptneox.o common-gptneox.o $(OBJS)
+	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
+
+
+
 build-info.h: $(wildcard .git/index) scripts/build-info.sh
 	@sh scripts/build-info.sh > $@.tmp
 	@if ! cmp -s $@.tmp $@; then \
@@ -250,6 +255,7 @@ build-info.h: $(wildcard .git/index) scripts/build-info.sh
 	else \
 		rm $@.tmp; \
 	fi
+
 
 #
 # Tests

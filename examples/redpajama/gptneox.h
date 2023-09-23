@@ -169,7 +169,7 @@ extern "C" {
                              int   n_max_tokens,
                             bool   add_bos);
 
-    GPTNEOX_API int gptneox_n_vocab(struct gptneox_context * ctx);
+    GPTNEOX_API int gptneox_n_vocab(const struct gptneox_context * ctx);
     GPTNEOX_API int gptneox_n_ctx  (struct gptneox_context * ctx);
     GPTNEOX_API int gptneox_n_embd (struct gptneox_context * ctx);
 
@@ -185,7 +185,7 @@ extern "C" {
     GPTNEOX_API float * gptneox_get_embeddings(struct gptneox_context * ctx);
 
     // Token Id -> String. Uses the vocabulary in the provided context
-    GPTNEOX_API const char * gptneox_token_to_str(struct gptneox_context * ctx, gptneox_token token);
+    GPTNEOX_API const char * gptneox_token_to_str(const struct gptneox_context * ctx, gptneox_token token);
 
     // String -> Token Id. Uses the vocabulary in the provided context
     GPTNEOX_API gptneox_token gptneox_str_to_token(struct gptneox_context * ctx, const char * str);
@@ -193,7 +193,7 @@ extern "C" {
     // Special tokens
     GPTNEOX_API gptneox_token gptneox_token_bos();
     GPTNEOX_API gptneox_token gptneox_token_eos();
-    // GPTNEOX_API gptneox_token gptneox_token_nl();
+    GPTNEOX_API gptneox_token gptneox_token_nl();
 
     // TODO: improve the last_n_tokens interface ?
     GPTNEOX_API gptneox_token gptneox_sample_top_p_top_k(
@@ -251,8 +251,22 @@ extern "C" {
     GPTNEOX_API gptneox_token gptneox_sample_token(struct gptneox_context * ctx, gptneox_token_data_array * candidates);
 
     // Performance information
+    struct gptneox_timings {
+        double t_start_ms;
+        double t_end_ms;
+        double t_load_ms;
+        double t_sample_ms;
+        double t_p_eval_ms;
+        double t_eval_ms;
+
+        int32_t n_sample;
+        int32_t n_p_eval;
+        int32_t n_eval;
+    };
+  
     GPTNEOX_API void gptneox_print_timings(struct gptneox_context * ctx);
     GPTNEOX_API void gptneox_reset_timings(struct gptneox_context * ctx);
+    GPTNEOX_API struct gptneox_timings gptneox_get_timings(struct gptneox_context * ctx);  
 
     // Print system information
     GPTNEOX_API const char * gptneox_print_system_info(void);

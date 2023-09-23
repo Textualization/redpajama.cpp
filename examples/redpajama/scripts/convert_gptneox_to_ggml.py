@@ -57,7 +57,7 @@ ftype = 1
 if len(sys.argv) > 3:
     ftype = 0
 
-tokenizer = AutoTokenizer.from_pretrained(model_name)
+tokenizer = AutoTokenizer.from_pretrained('togethercomputer/RedPajama-INCITE-Chat-3B-v1')
 print("Loading model: ", model_name)
 model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.float16 if ftype == 1 else torch.float32, 
                                              cache_dir=model_cache_dir)
