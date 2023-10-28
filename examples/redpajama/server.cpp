@@ -224,6 +224,7 @@ struct gptneox_server_context
         lparams.f16_kv     = params.memory_f16;
         lparams.use_mmap   = params.use_mmap;
         lparams.use_mlock  = params.use_mlock;
+        lparams.embedding  = params.embedding;
 
         ctx = gptneox_init_from_file(params.model.c_str(), lparams);
 
