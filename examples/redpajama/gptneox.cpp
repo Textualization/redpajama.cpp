@@ -55,7 +55,7 @@ static const size_t MiB = 1024*1024;
 static const std::map<e_model, size_t> & MEM_REQ_SCRATCH0()
 {
     static std::map<e_model, size_t> _MEM_REQ_SCRATCH0 = {
-        { MODEL_3B,    128ull * MiB },
+        { MODEL_3B,    256ull * MiB },
         { MODEL_7B,    512ull * MiB },
         { MODEL_12B,   512ull * MiB },
         { MODEL_20B,   512ull * MiB },
@@ -67,7 +67,7 @@ static const std::map<e_model, size_t> & MEM_REQ_SCRATCH0()
 static const std::map<e_model, size_t> & MEM_REQ_SCRATCH1()
 {
     static std::map<e_model, size_t> _MEM_REQ_SCRATCH1 = {
-        { MODEL_3B,    128ull * MiB },
+        { MODEL_3B,    256ull * MiB },
         { MODEL_7B,    512ull * MiB },
         { MODEL_12B,   512ull * MiB },
         { MODEL_20B,   512ull * MiB },
